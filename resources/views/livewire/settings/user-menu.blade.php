@@ -28,25 +28,44 @@ new class extends Component {
 }; ?>
 <div>
     <x-mary-dropdown right>
-        <x-slot:trigger class="cursor-pointer hover:opacity-80 transition-all">
-            <x-mary-avatar :image="$user->avatar ?? '/images/empty-user.jpg'"
-                class="!w-10 !text-base-content !bg-base-300 overflow-hidden">
-                <x-slot:title class="text-sm font-semibold max-w-[150px] truncate">
+        <x-slot:trigger
+            class="cursor-pointer transition-all hover:opacity-80"
+        >
+            <x-mary-avatar
+                class="!text-base-content !bg-base-300 !w-10 overflow-hidden"
+                :image="$user->avatar ?? '/images/empty-user.jpg'"
+            >
+                <x-slot:title
+                    class="max-w-[150px] truncate text-sm font-semibold"
+                >
                     {{ $user->name }}
                 </x-slot:title>
-                <x-slot:subtitle class="text-xs font-light max-w-[150px] truncate">
+                <x-slot:subtitle
+                    class="max-w-[150px] truncate text-xs font-light"
+                >
                     {{ $user->email }}
                 </x-slot:subtitle>
             </x-mary-avatar>
         </x-slot:trigger>
-        <x-mary-menu-item :title="__('Settings')" icon="s-cog-6-tooth" :link="route('settings.profile')" />
-        <x-mary-menu-item :title="__('Repository')" icon="fab.github"
-            link="https://github.com/lauroguedes/mary-ui-starter-kit" external />
-        <x-mary-menu-item :title="__('Documentation')" icon="s-book-open" link="https://laravel.com/docs/starter-kits"
-            external />
+        <x-mary-menu-item
+            :title="__('Settings')"
+            icon="s-cog-6-tooth"
+            :link="route('settings.profile')"
+        />
+        <x-mary-menu-item
+            :title="__('Repository')"
+            icon="fab.github"
+            link="https://github.com/fukigenmedia/thesis-turnitin-management"
+            external
+        />
         <x-mary-menu-separator />
-        <x-mary-menu-item :title="__('Log out')" wire:click.stop="logout" spinner="logout" class="text-error"
-            icon="o-power" />
+        <x-mary-menu-item
+            class="text-error"
+            :title="__('Log out')"
+            wire:click.stop="logout"
+            spinner="logout"
+            icon="o-power"
+        />
     </x-mary-dropdown>
     <style>
         .dropdown {
