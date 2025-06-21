@@ -12,6 +12,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
     public string $name = '';
     public string $email = '';
     public string $password = '';
+    public string $role = '';
     public string $password_confirmation = '';
 
     /**
@@ -24,12 +25,18 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'role' => ['nullable', 'string', 'in:dosen,user'],
             'password' => $passwordRules,
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
 
-        event(new Registered(($user = User::create($validated))));
+        $user = User::create($validated);
+
+        $user->update([
+            'role' => $validated['role'],
+            'email_verified_at' => now(),
+        ]);
 
         Auth::login($user);
 
@@ -38,29 +45,79 @@ new #[Layout('components.layouts.auth')] class extends Component {
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Create an account')" :description="__('Enter your details below to create your account')" />
+    <x-auth-header
+        :title="__('Create an account')"
+        :description="__('Enter your details below to create your account')"
+    />
 
     <!-- Session Status -->
-    <x-auth-session-status class="text-center" :status="session('status')" />
+    <x-auth-session-status
+        class="text-center"
+        :status="session('status')"
+    />
 
-    <form wire:submit="register" class="flex flex-col gap-6">
-        <x-mary-input :label="__('Name')" wire:model="name" :placeholder="__('Full name')" type="text" required autofocus
-            autocomplete="name" />
+    <form
+        class="flex flex-col gap-6"
+        wire:submit="register"
+    >
+        <x-mary-input
+            type="text"
+            :label="__('Name')"
+            wire:model="name"
+            :placeholder="__('Full name')"
+            required
+            autofocus
+            autocomplete="name"
+        />
 
-        <x-mary-input :label="__('Email address')" wire:model="email" placeholder="email@example.com" type="email" required
-            autocomplete="email" />
+        <x-mary-input
+            type="email"
+            :label="__('Email address')"
+            wire:model="email"
+            placeholder="email@example.com"
+            required
+            autocomplete="email"
+        />
 
-        <x-mary-password wire:model="password" :placeholder="__('Password')" :label="__('Password')" required right
-            autocomplete="new-password" />
+        <x-mary-select
+            wire:model="role"
+            :label="__('Jenis Akun')"
+            placeholder="Pilih Jenis Akun"
+            required
+            :options="[['id' => 'dosen', 'name' => 'Dosen'], ['id' => 'mahasiswa', 'name' => 'Mahasiswa']]"
+        />
 
-        <x-mary-password wire:model="password_confirmation" :placeholder="__('Confirm password')" :label="__('Confirm password')" required right
-            autocomplete="new-password" />
+        <x-mary-password
+            wire:model="password"
+            :placeholder="__('Password')"
+            :label="__('Password')"
+            required
+            right
+            autocomplete="new-password"
+        />
 
-        <x-mary-button type="submit" :label="__('Create account')" class="btn-accent" />
+        <x-mary-password
+            wire:model="password_confirmation"
+            :placeholder="__('Confirm password')"
+            :label="__('Confirm password')"
+            required
+            right
+            autocomplete="new-password"
+        />
+
+        <x-mary-button
+            class="btn-accent"
+            type="submit"
+            :label="__('Create account')"
+        />
     </form>
 
-    <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-base-content">
+    <div class="text-base-content space-x-1 text-center text-sm rtl:space-x-reverse">
         {{ __('Already have an account?') }}
-        <x-mary-button :label="__('Log in')" :link="route('login')" class="btn-link link-accent link-hover pl-0" />
+        <x-mary-button
+            class="btn-link link-accent link-hover pl-0"
+            :label="__('Log in')"
+            :link="route('login')"
+        />
     </div>
 </div>
