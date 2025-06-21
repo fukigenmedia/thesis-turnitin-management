@@ -22,7 +22,7 @@ final class UserSeeder extends Seeder
 
         foreach ($users as $user) {
             User::create([
-                'name' => $user,
+                'name' => ucwords($user),
                 'email' => $user . '@example.com',
                 'password' => bcrypt('password'),
                 'role' => $user,
