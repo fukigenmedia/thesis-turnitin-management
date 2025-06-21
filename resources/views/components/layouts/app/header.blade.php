@@ -27,7 +27,6 @@
                 <div class="hidden items-center justify-end gap-4 lg:flex rtl:space-x-reverse">
                     <x-partials.menu class="menu-horizontal space-x-2 !p-0" />
                     <livewire:settings.user-menu />
-                    <x-mary-theme-toggle />
                 </div>
 
                 {{-- MOBILE TRIGGER BUTTON --}}
@@ -60,7 +59,6 @@
                     >
                         <x-app-logo />
                     </a>
-                    <x-mary-theme-toggle />
                 </div>
 
                 {{-- USER MENU --}}

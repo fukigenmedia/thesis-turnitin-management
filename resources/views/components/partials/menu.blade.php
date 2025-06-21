@@ -3,12 +3,12 @@
     activate-by-route
 >
     <x-mary-menu-item
-        title="Dashboard"
+        title="Beranda"
         icon="m-rectangle-group"
         :link="route('dashboard')"
     />
     <x-mary-menu-item
-        title="Users"
+        title="Pengguna"
         icon="s-users"
         :link="route('users.index')"
         :hidden="!in_array(auth()->user()->role, ['admin'])"
