@@ -7,13 +7,21 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
+use App\Enums\UserRole;
 
 new #[Layout('components.layouts.auth')] class extends Component {
     public string $name = '';
     public string $email = '';
     public string $password = '';
-    public string $role = '';
+    public string $role = 'mahasiswa';
     public string $password_confirmation = '';
+
+    public array $roleOptions;
+
+    public function mount(): void
+    {
+        $this->roleOptions = collect(UserRole::all())->reject(fn($role) => $role['id']->value === 'admin')->values()->all();
+    }
 
     /**
      * Handle an incoming registration request.
@@ -25,7 +33,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'role' => ['nullable', 'string', 'in:dosen,user'],
+            'role' => ['nullable', 'string', 'in:dosen,mahasiswa'],
             'password' => $passwordRules,
         ]);
 
@@ -79,12 +87,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
             autocomplete="email"
         />
 
-        <x-mary-select
+        <x-mary-group
+            class="[&:checked]:!btn-primary"
+            label="Jenis Akun"
             wire:model="role"
-            :label="__('Jenis Akun')"
-            placeholder="Pilih Jenis Akun"
-            required
-            :options="[['id' => 'dosen', 'name' => 'Dosen'], ['id' => 'mahasiswa', 'name' => 'Mahasiswa']]"
+            :options="$roleOptions"
         />
 
         <x-mary-password

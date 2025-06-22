@@ -6,7 +6,7 @@ use Mary\Traits\Toast;
 use Livewire\Attributes\Validate;
 use Livewire\WithFileUploads;
 use App\Enums\UserStatus;
-use App\Notifications\UserCreated;
+use App\Enums\UserRole;
 use Illuminate\Support\Str;
 
 new class extends Component {
@@ -18,7 +18,9 @@ new class extends Component {
     #[Validate('required|email|max:50|unique:users')]
     public string $email = '';
 
+    #[Validate('required|string|min:8|max:255|confirmed')]
     public string $password = '';
+    public string $password_confirmation = '';
 
     #[Validate('nullable|image|max:1024')]
     public mixed $avatar = null;
@@ -26,28 +28,32 @@ new class extends Component {
     #[Validate('required|int')]
     public int $status;
 
+    #[Validate('required|string|in:admin,dosen,mahasiswa')]
+    public string $role = 'mahasiswa';
+
     public array $statusOptions;
+
+    public array $roleOptions;
 
     public function mount(): void
     {
         $this->status = UserStatus::ACTIVE->value;
+
         $this->statusOptions = UserStatus::all();
+        $this->roleOptions = UserRole::all();
     }
 
     public function save(): void
     {
         $data = $this->validate();
 
-        $randomPassword = Str::password(12);
-        $data['password'] = Hash::make(value: $randomPassword);
-
         $this->processUpload($data);
 
+        $data['email_verified_at'] = now();
+        $data['password'] = bcrypt($data['password']);
         $user = User::create($data);
 
-        $user->notify(new UserCreated($randomPassword));
-
-        $this->success(__("User {$user->name} created with success."), redirectTo: route('users.index'));
+        $this->success('Pengguna berhasil dibuat.', redirectTo: route('users.index'));
     }
 
     private function processUpload(array &$data): void
@@ -61,59 +67,105 @@ new class extends Component {
     }
 }; ?>
 
-<x-pages.layout :page-title="__('Create User')">
+<x-pages.layout
+    page-title="Tambah Pengguna"
+    page-subtitle="Menambahkan pengguna baru ke sistem."
+>
     <x-slot:content>
-        <div class="grid gap-5 lg:grid-cols-2">
-            <x-mary-form wire:submit="save">
-                <x-mary-file
-                    wire:model="avatar"
-                    accept="image/png, image/jpeg"
-                    crop-after-change
-                >
-                    <img
-                        class="h-36 rounded-lg"
-                        src="/images/empty-user.jpg"
+        <x-mary-form wire:submit="save">
+            <div
+                class="mb-10 grid gap-5 lg:grid-cols-2"
+                id="create-user-form"
+            >
+                <div>
+                    <x-mary-header
+                        class="!mb-6"
+                        title="Data Pengguna Baru"
+                        size="text-xl"
+                        subtitle="Isi informasi pengguna baru di bawah ini."
                     />
-                </x-mary-file>
+                </div>
 
-                <x-mary-input
-                    :label="__('Name')"
-                    wire:model="name"
-                />
-                <x-mary-input
-                    :label="__('Email')"
-                    wire:model="email"
-                />
-                <x-mary-group
-                    class="[&:checked]:!btn-primary"
-                    :label="__('Status')"
-                    wire:model="status"
-                    :options="$statusOptions"
-                />
+                <div>
+                    <x-mary-file
+                        wire:model="avatar"
+                        accept="image/png, image/jpeg"
+                        crop-after-change
+                    >
+                        <img
+                            class="h-36 rounded-lg"
+                            src="/images/empty-user.jpg"
+                        />
+                    </x-mary-file>
 
-                <x-slot:actions>
-                    <x-mary-button
-                        class="btn-soft"
-                        :label="__('Cancel')"
-                        :link="route('users.index')"
+                    <x-mary-input
+                        :label="__('Name')"
+                        wire:model="name"
                     />
-                    <x-mary-button
-                        class="btn-primary"
-                        type="submit"
-                        :label="__('Save')"
-                        icon="o-paper-airplane"
-                        spinner="save"
+                    <x-mary-input
+                        :label="__('Email')"
+                        wire:model="email"
                     />
-                </x-slot:actions>
-            </x-mary-form>
-            <div class="hidden place-self-center lg:block">
-                <img
-                    class="mx-auto"
-                    src="/images/user-action-page.svg"
-                    width="300"
-                />
+                    <x-mary-group
+                        class="[&:checked]:!btn-primary"
+                        :label="__('Status')"
+                        wire:model="status"
+                        :options="$statusOptions"
+                    />
+                    <x-mary-group
+                        class="[&:checked]:!btn-primary"
+                        label="Tipe Akun"
+                        wire:model="role"
+                        :options="$roleOptions"
+                    />
+                </div>
             </div>
-        </div>
+
+            <div
+                class="mb-10 grid gap-5 lg:grid-cols-2"
+                id="create-user-password-form"
+            >
+                <div>
+                    <x-mary-header
+                        class="!mb-6"
+                        title="Password Pengguna Baru"
+                        size="text-xl"
+                        subtitle="Masukkan password untuk pengguna baru."
+                    />
+                </div>
+
+                <div>
+                    <x-mary-input
+                        type="password"
+                        :label="__('Password')"
+                        wire:model="password"
+                        placeholder="Masukkan password baru"
+                    />
+
+                    <x-mary-input
+                        type="password"
+                        :label="__('Konfirmasi Password')"
+                        wire:model="password_confirmation"
+                        placeholder="Konfirmasi password baru"
+                    />
+                </div>
+            </div>
+
+            <x-slot:actions>
+                <x-mary-button
+                    class="btn-soft"
+                    label="Batal"
+                    :link="route('users.index')"
+                />
+                <x-mary-button
+                    class="btn-primary"
+                    type="submit"
+                    :label="__('Save')"
+                    icon="o-paper-airplane"
+                    spinner="save"
+                />
+            </x-slot:actions>
+        </x-mary-form>
     </x-slot:content>
 </x-pages.layout>
 

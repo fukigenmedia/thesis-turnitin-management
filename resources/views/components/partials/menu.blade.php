@@ -11,6 +11,6 @@
         title="Pengguna"
         icon="s-users"
         :link="route('users.index')"
-        :hidden="!in_array(auth()->user()->role, ['admin'])"
+        :hidden="!in_array(auth()->user()->role->value, ['admin'])"
     />
 </x-mary-menu>

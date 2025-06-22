@@ -91,6 +91,8 @@
                 <x-partials.footer-info />
             </x-slot:content>
         </x-mary-main>
+
+        <x-mary-toast />
     </body>
 
 </html>

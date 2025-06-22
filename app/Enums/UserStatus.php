@@ -32,9 +32,9 @@ enum UserStatus: int
     public function label(): string
     {
         return match ($this) {
-            self::ACTIVE => 'Active',
-            self::INACTIVE => 'Inactive',
-            self::SUSPENDED => 'Suspended',
+            self::ACTIVE => 'Aktif',
+            self::INACTIVE => 'Tidak Aktif',
+            self::SUSPENDED => 'Terblokir',
         };
     }
 }

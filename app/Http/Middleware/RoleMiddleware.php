@@ -17,7 +17,7 @@ final class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        if (! auth()->check() || ! in_array(auth()->user()->role, $roles)) {
+        if (! auth()->check() || ! in_array(auth()->user()->role->value, $roles)) {
             return redirect()->route('dashboard')->with('alert', [
                 'type' => 'error',
                 'title' => 'Akses Ditolak',
