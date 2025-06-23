@@ -29,7 +29,7 @@ new class extends Component {
 
     public function headers(): array
     {
-        return [['key' => 'avatar', 'label' => 'Avatar', 'sortable' => false, 'class' => 'w-1'], ['key' => 'name', 'label' => 'Name'], ['key' => 'email', 'label' => 'Email', 'sortable' => false], ['key' => 'role', 'label' => 'Role', 'sortable' => false]];
+        return [['key' => 'avatar', 'label' => 'Foto', 'sortable' => false, 'class' => 'w-1'], ['key' => 'name', 'label' => 'Nama'], ['key' => 'email', 'label' => 'Email', 'sortable' => false], ['key' => 'role', 'label' => 'Peran', 'sortable' => false]];
     }
 
     public function delete(User $user): void
