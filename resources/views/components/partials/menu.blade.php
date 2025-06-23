@@ -21,7 +21,7 @@
     <x-mary-menu-item
         title="Slider"
         icon="s-photo"
-        :link="route('users.index')"
+        :link="route('sliders.index')"
         :hidden="!in_array(auth()->user()->role->value, ['admin'])"
     />
     <li class="self-center">

@@ -22,6 +22,12 @@ Route::middleware(['auth'])->group(function () {
             Volt::route('/create', 'pages.users.create')->name('create');
             Volt::route('/{user}/edit', 'pages.users.edit')->name('edit');
         });
+
+        Route::prefix('sliders')->name('sliders.')->group(function () {
+            Volt::route('/', 'pages.sliders.index')->name('index');
+            Volt::route('create', 'pages.sliders.create')->name('create');
+            Volt::route('{slider}/edit', 'pages.sliders.edit')->name('edit');
+        });
     });
 });
 
