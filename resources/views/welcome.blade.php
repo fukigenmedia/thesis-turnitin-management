@@ -103,7 +103,7 @@
                 class="container flex min-h-screen flex-col"
             >
                 <div class="flex flex-1 flex-col items-stretch gap-2">
-                    {{-- SLOT --}}
+                    <livewire:welcome />
                 </div>
 
                 <x-partials.footer-info />
