@@ -3,12 +3,18 @@
 use Livewire\Volt\Component;
 
 use App\Models\Slider;
+use App\Models\User;
 
 new class extends Component {
     public function with(): array
     {
         return [
             'sliders' => Slider::where('status', true)->take(5)->get(),
+            'count' => [
+                'lecture' => User::where('role', 'dosen')->count(),
+                'student' => User::where('role', 'mahasiswa')->count(),
+                'files' => 0, // Assuming you will implement file counting logic later
+            ],
         ];
     }
 }; ?>
@@ -43,8 +49,11 @@ new class extends Component {
             <div
                 class="carousel-item absolute w-full transition-opacity duration-700"
                 id="slide{{ $index + 1 }}"
-                :class="{ 'opacity-100 z-10 relative': active === {{ $index }}, 'opacity-0 z-0': active !==
-                        {{ $index }} }"
+                :class="{
+                    'opacity-100 z-10 relative': active === {{ $index }},
+                    'opacity-0 z-0': active !==
+                        {{ $index }}
+                }"
                 x-show="active === {{ $index }}"
                 x-transition.opacity
             >
@@ -67,5 +76,37 @@ new class extends Component {
                 </div>
             </div>
         @endforeach
+    </div>
+
+    <div class="mt-8 flex justify-center">
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <div class="card bg-base-100 w-96 shadow-sm">
+                <div class="card-body">
+                    <span class="badge badge-xs badge-soft">Total</span>
+                    <div class="flex justify-between">
+                        <h2 class="text-xl font-bold">Dosen</h2>
+                        <span class="text-3xl font-bold">{{ $count['lecture'] }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-base-100 w-96 shadow-sm">
+                <div class="card-body">
+                    <span class="badge badge-xs badge-soft">Total</span>
+                    <div class="flex justify-between">
+                        <h2 class="text-xl font-bold">Mahasiswa</h2>
+                        <span class="text-3xl font-bold">{{ $count['student'] }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card bg-base-100 w-96 shadow-sm">
+                <div class="card-body">
+                    <span class="badge badge-xs badge-soft">Total</span>
+                    <div class="flex justify-between">
+                        <h2 class="text-xl font-bold">Berkas Turnitin</h2>
+                        <span class="text-3xl font-bold">{{ $count['files'] }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

@@ -7,6 +7,7 @@
 
     <body class="bg-base-200 min-h-screen font-sans antialiased">
         <x-mary-nav
+            class="z-50"
             sticky
             full-width
         >
