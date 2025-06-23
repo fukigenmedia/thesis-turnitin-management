@@ -14,7 +14,7 @@
             <x-slot:brand>
                 <a
                     class="me-5 flex items-center space-x-2 rtl:space-x-reverse"
-                    href="{{ route('dashboard') }}"
+                    href="/"
                     wire:navigate
                 >
                     <x-app-logo />
