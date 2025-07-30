@@ -4,6 +4,7 @@ use Livewire\Volt\Component;
 
 use App\Models\Slider;
 use App\Models\User;
+use App\Models\TurnitinThread;
 
 new class extends Component {
     public function with(): array
@@ -13,7 +14,7 @@ new class extends Component {
             'count' => [
                 'lecture' => User::where('role', 'dosen')->count(),
                 'student' => User::where('role', 'mahasiswa')->count(),
-                'files' => 0, // Assuming you will implement file counting logic later
+                'files' => TurnitinThread::count(),
             ],
         ];
     }
