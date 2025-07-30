@@ -14,8 +14,18 @@ final class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            UserSeeder::class,
-        ]);
+        $seeders = [
+            DefaultSeeder::class,
+        ];
+
+        if (config('app.env') === 'local') {
+            $seeders = array_merge($seeders, [
+                UserSeeder::class,
+                TurnitinThreadSeeder::class,
+                TurnitinThreadCommentSeeder::class,
+            ]);
+        }
+
+        $this->call($seeders);
     }
 }
