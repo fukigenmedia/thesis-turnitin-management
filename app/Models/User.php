@@ -61,6 +61,30 @@ final class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get the turnitin threads as student
+     */
+    public function studentThreads()
+    {
+        return $this->hasMany(TurnitinThread::class, 'student_id');
+    }
+
+    /**
+     * Get the turnitin threads as lecturer
+     */
+    public function lectureThreads()
+    {
+        return $this->hasMany(TurnitinThread::class, 'lecture_id');
+    }
+
+    /**
+     * Get the turnitin thread comments
+     */
+    public function turnitinComments()
+    {
+        return $this->hasMany(TurnitinThreadComment::class);
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
