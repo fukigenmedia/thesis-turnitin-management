@@ -9,6 +9,7 @@ use Mary\Traits\Toast;
 use Livewire\Attributes\Validate;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Str;
+use App\Services\NotificationService;
 
 new class extends Component {
     use Toast, WithFileUploads;
@@ -37,7 +38,11 @@ new class extends Component {
         $data['turnitin_thread_id'] = $this->thread->id;
         $data['user_id'] = auth()->id();
 
-        TurnitinThreadComment::create($data);
+        $comment = TurnitinThreadComment::create($data);
+
+        // Send notification
+        $notificationService = app(NotificationService::class);
+        $notificationService->sendNewCommentNotification($comment, auth()->user());
 
         $this->reset(['comment', 'commentFile']);
 
@@ -101,8 +106,17 @@ new class extends Component {
             return;
         }
 
+        $oldStatus = $this->thread->status;
+        $newStatus = TurnitinThreadStatus::from($status);
+
         $this->thread->update(['status' => $status]);
         $this->thread->refresh();
+
+        // Send notification if status actually changed
+        if ($oldStatus !== $newStatus) {
+            $notificationService = app(NotificationService::class);
+            $notificationService->sendThreadStatusChangedNotification($this->thread, $oldStatus, $newStatus, $user);
+        }
 
         $this->success('Status berhasil diperbarui.');
     }
@@ -144,6 +158,10 @@ new class extends Component {
 
         // Mark this comment as solution
         $comment->update(['is_solution' => true]);
+
+        // Send notification
+        $notificationService = app(NotificationService::class);
+        $notificationService->sendSolutionMarkedNotification($comment, $this->thread, $user);
 
         $this->thread->load(['comments.user', 'solution.user']);
 

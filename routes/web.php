@@ -16,6 +16,9 @@ Route::middleware(['auth'])->group(function () {
         Volt::route('/password', 'settings.password')->name('password');
     });
 
+    // Notifications
+    Volt::route('/notifications', 'pages.notifications.index')->name('notifications.index');
+
     Route::prefix('turnitin-threads')->name('turnitin-threads.')->group(function () {
         Route::middleware(['role:mahasiswa,dosen'])->group(function () {
             Volt::route('/create', 'pages.turnitin-threads.create')->name('create');

@@ -9,6 +9,7 @@ use Mary\Traits\Toast;
 use Livewire\Attributes\Validate;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Str;
+use App\Services\NotificationService;
 
 new class extends Component {
     use Toast, WithFileUploads;
@@ -67,7 +68,11 @@ new class extends Component {
 
         $data['status'] = TurnitinThreadStatus::OPEN;
 
-        TurnitinThread::create($data);
+        $thread = TurnitinThread::create($data);
+
+        // Send notification
+        $notificationService = app(NotificationService::class);
+        $notificationService->sendThreadCreatedNotification($thread, auth()->user());
 
         $this->success('Thread berhasil dibuat.', redirectTo: route('turnitin-threads.index'));
     }
