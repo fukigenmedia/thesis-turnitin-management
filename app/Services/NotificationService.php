@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Notification;
 
 final class NotificationService
 {
+    public function __construct(
+        private PushNotificationService $pushNotificationService
+    ) {}
+
     /**
      * Send notification when a thread is created
      */
@@ -24,8 +28,20 @@ final class NotificationService
     {
         // Notify the lecturer assigned to the thread
         if ($thread->lecturer && $thread->lecturer->id !== $creator->id) {
-            $thread->lecturer->notify(new ThreadCreated($thread, $creator));
-            $this->dispatchNotificationEvent($thread->lecturer->id);
+            // Check if user wants to receive this type of notification
+            if ($thread->lecturer->thread_created_notifications) {
+                $thread->lecturer->notify(new ThreadCreated($thread, $creator));
+                $this->dispatchNotificationEvent($thread->lecturer->id);
+
+                // Send push notification if enabled
+                $this->sendPushNotificationIfEnabled(
+                    $thread->lecturer,
+                    'thread_created',
+                    'Thread Baru Dibuat',
+                    "Anda ditag dalam thread baru: {$thread->name} oleh {$creator->name}",
+                    route('turnitin-threads.show', $thread->id)
+                );
+            }
         }
     }
 
@@ -62,8 +78,20 @@ final class NotificationService
 
         // Send notifications
         foreach ($usersToNotify as $user) {
-            $user->notify(new NewComment($comment, $thread, $commenter));
-            $this->dispatchNotificationEvent($user->id);
+            // Check if user wants to receive this type of notification
+            if ($user->new_comment_notifications) {
+                $user->notify(new NewComment($comment, $thread, $commenter));
+                $this->dispatchNotificationEvent($user->id);
+
+                // Send push notification if enabled
+                $this->sendPushNotificationIfEnabled(
+                    $user,
+                    'new_comment',
+                    'Komentar Baru',
+                    "{$commenter->name} menambahkan komentar pada thread: {$thread->name}",
+                    route('turnitin-threads.show', $thread->id)
+                );
+            }
         }
     }
 
@@ -91,8 +119,20 @@ final class NotificationService
 
         // Send notifications
         foreach ($usersToNotify as $user) {
-            $user->notify(new SolutionMarked($comment, $thread, $marker));
-            $this->dispatchNotificationEvent($user->id);
+            // Check if user wants to receive this type of notification
+            if ($user->solution_marked_notifications) {
+                $user->notify(new SolutionMarked($comment, $thread, $marker));
+                $this->dispatchNotificationEvent($user->id);
+
+                // Send push notification if enabled
+                $this->sendPushNotificationIfEnabled(
+                    $user,
+                    'solution_marked',
+                    'Jawaban Ditandai Sebagai Solusi',
+                    "{$marker->name} menandai jawaban sebagai solusi pada thread: {$thread->name}",
+                    route('turnitin-threads.show', $thread->id)
+                );
+            }
         }
     }
 
@@ -119,8 +159,43 @@ final class NotificationService
 
         // Send notifications
         foreach ($usersToNotify as $user) {
-            $user->notify(new ThreadStatusChanged($thread, $oldStatus, $newStatus, $changer));
-            $this->dispatchNotificationEvent($user->id);
+            // Check if user wants to receive this type of notification
+            if ($user->thread_status_notifications) {
+                $user->notify(new ThreadStatusChanged($thread, $oldStatus, $newStatus, $changer));
+                $this->dispatchNotificationEvent($user->id);
+
+                // Send push notification if enabled
+                $this->sendPushNotificationIfEnabled(
+                    $user,
+                    'status_changed',
+                    'Status Thread Berubah',
+                    "{$changer->name} mengubah status thread '{$thread->name}' " .
+                    "dari {$oldStatus->label()} ke {$newStatus->label()}",
+                    route('turnitin-threads.show', $thread->id)
+                );
+            }
+        }
+    }
+
+    /**
+     * Send push notification if user has enabled it
+     */
+    private function sendPushNotificationIfEnabled(
+        User $user,
+        string $type,
+        string $title,
+        string $message,
+        string $url
+    ): void {
+        // Check if user has push notifications enabled
+        if ($user->push_notifications_enabled) {
+            event('push-notification', [
+                'user_id' => $user->id,
+                'title' => $title,
+                'message' => $message,
+                'url' => $url,
+                'type' => $type,
+            ]);
         }
     }
 

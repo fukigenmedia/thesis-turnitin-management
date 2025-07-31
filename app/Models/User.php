@@ -31,8 +31,15 @@ final class User extends Authenticatable implements MustVerifyEmail
         'status',
         'role',
         'password',
-
         'email_verified_at',
+
+        // Notification preferences
+        'push_notifications_enabled',
+        'email_notifications_enabled',
+        'thread_created_notifications',
+        'new_comment_notifications',
+        'solution_marked_notifications',
+        'thread_status_notifications',
     ];
 
     /**
@@ -82,6 +89,24 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function turnitinComments()
     {
         return $this->hasMany(TurnitinThreadComment::class);
+    }
+
+    /**
+     * Get user setting value
+     */
+    public function getSetting(string $key, mixed $default = null): mixed
+    {
+        // For now, we'll use session-based settings
+        // In production, you might want to create a user_settings table
+        return session("user_settings.{$this->id}.{$key}", $default);
+    }
+
+    /**
+     * Set user setting value
+     */
+    public function setSetting(string $key, mixed $value): void
+    {
+        session(["user_settings.{$this->id}.{$key}" => $value]);
     }
 
     /**
