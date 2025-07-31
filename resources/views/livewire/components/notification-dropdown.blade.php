@@ -6,16 +6,16 @@
 >
     <!-- Notification Bell -->
     <button
-        class="relative flex items-center justify-center p-2 text-gray-600 hover:text-gray-900 focus:outline-none"
+        class="relative flex items-center justify-center p-1 text-gray-900 hover:text-gray-950 focus:outline-none"
         @click="isOpen = !isOpen"
     >
         <x-mary-icon
-            class="h-6 w-6"
+            class="h-5 w-5"
             name="s-bell"
         />
         @if ($unreadCount > 0)
             <x-mary-badge
-                class="badge-error badge-sm absolute -right-1 -top-1 min-h-5 min-w-5"
+                class="badge-error badge-sm absolute -right-3 -top-2 min-h-5 min-w-5"
                 :value="$unreadCount > 99 ? '99+' : $unreadCount"
             />
         @endif
@@ -23,7 +23,7 @@
 
     <!-- Dropdown -->
     <div
-        class="absolute right-0 z-50 mt-2 w-80 origin-top-right rounded-md border border-gray-200 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+        class="absolute right-0 top-12 z-50 mt-2 w-80 origin-top-right rounded-md border border-gray-200 bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
         style="display: none;"
         x-show="isOpen"
         x-transition:enter="transition ease-out duration-200"
