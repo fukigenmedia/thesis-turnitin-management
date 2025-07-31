@@ -10,7 +10,7 @@
     <x-mary-menu-item
         title="Berkas Turnitin"
         icon="s-bookmark-square"
-        :link="route('users.index')"
+        :link="route('turnitin-threads.index')"
     />
     <x-mary-menu-item
         title="Pengguna"

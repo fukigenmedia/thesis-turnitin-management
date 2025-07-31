@@ -13,6 +13,11 @@ final class TurnitinThreadComment extends Model
         'user_id',
         'comment',
         'file',
+        'is_solution',
+    ];
+
+    protected $casts = [
+        'is_solution' => 'boolean',
     ];
 
     public function thread()

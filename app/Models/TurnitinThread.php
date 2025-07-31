@@ -32,6 +32,11 @@ final class TurnitinThread extends Model
         return $this->hasMany(TurnitinThreadComment::class, 'turnitin_thread_id');
     }
 
+    public function solution()
+    {
+        return $this->hasOne(TurnitinThreadComment::class, 'turnitin_thread_id')->where('is_solution', true);
+    }
+
     public function student()
     {
         return $this->belongsTo(User::class, 'student_id');

@@ -16,6 +16,19 @@ Route::middleware(['auth'])->group(function () {
         Volt::route('/password', 'settings.password')->name('password');
     });
 
+    Route::prefix('turnitin-threads')->name('turnitin-threads.')->group(function () {
+        Route::middleware(['role:mahasiswa,dosen'])->group(function () {
+            Volt::route('/create', 'pages.turnitin-threads.create')->name('create');
+        });
+
+        Route::middleware(['role:mahasiswa', 'thread.owner'])->group(function () {
+            Volt::route('/{thread}/edit', 'pages.turnitin-threads.edit')->name('edit');
+        });
+
+        Volt::route('/', 'pages.turnitin-threads.index')->name('index');
+        Volt::route('/{thread}', 'pages.turnitin-threads.show')->name('show');
+    });
+
     Route::middleware(['role:admin'])->group(function () {
         Route::prefix('users')->name('users.')->group(function () {
             Volt::route('/', 'pages.users.index')->name('index');
